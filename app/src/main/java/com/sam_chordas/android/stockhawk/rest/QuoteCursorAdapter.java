@@ -27,12 +27,11 @@ import static com.sam_chordas.android.stockhawk.R.drawable.percent_change_pill_r
 public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAdapter.ViewHolder>
         implements ItemTouchHelperAdapter {
 
-    private static Context mContext;
-    private boolean isPercent;
+    private final Context mContext;
 
     public QuoteCursorAdapter(Context context, Cursor cursor) {
-        super(context, cursor);
-        mContext = context;
+        super(cursor);
+        this.mContext = context;
     }
 
     @Override
@@ -41,7 +40,7 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
     }
 
     @Override
-    public void onBindViewHolder(final ViewHolder viewHolder, final Cursor cursor) {
+    public void onBindViewHolder(ViewHolder viewHolder, Cursor cursor) {
         viewHolder.symbol.setText(cursor.getString(cursor.getColumnIndex("symbol")));
         viewHolder.bidPrice.setText(cursor.getString(cursor.getColumnIndex("bid_price")));
         viewHolder.change.setBackgroundResource(cursor.getInt(cursor.getColumnIndex("is_up")) == 1 ? R.drawable.percent_change_pill_green : percent_change_pill_red);

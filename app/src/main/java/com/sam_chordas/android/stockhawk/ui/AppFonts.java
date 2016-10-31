@@ -12,7 +12,7 @@ public class AppFonts {
 
     public static Typeface getRobotoLight(Context context) {
         if (robotoLight == null) {
-            Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Light.ttf");
+            robotoLight = Typeface.createFromAsset(context.getAssets(), "fonts/Roboto-Light.ttf");
         }
         return robotoLight;
     }
