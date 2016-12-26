@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -31,7 +32,7 @@ import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.rest.QuoteCursorAdapter;
 import com.sam_chordas.android.stockhawk.rest.RecyclerViewItemClickListener;
-import com.sam_chordas.android.stockhawk.rest.Utils;
+import com.sam_chordas.android.stockhawk.service.Constants;
 import com.sam_chordas.android.stockhawk.service.StockIntentService;
 import com.sam_chordas.android.stockhawk.service.StockTaskService;
 import com.sam_chordas.android.stockhawk.touch_helper.SimpleItemTouchHelperCallback;
@@ -43,32 +44,33 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
      */
 
     private static final int CURSOR_LOADER_ID = 0;
-    private CharSequence mTitle;
-    private Intent mServiceIntent;
+
     private QuoteCursorAdapter mCursorAdapter;
     private Cursor mCursor;
+    private RecyclerView recyclerView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_my_stocks);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         // The intent service is for executing immediate pulls from the Yahoo API
         // GCMTaskService can only schedule tasks, they cannot execute immediately
-        mServiceIntent = new Intent(this, StockIntentService.class);
+        final Intent mServiceIntent = new Intent(this, StockIntentService.class);
+        mServiceIntent.setAction(Constants.ACTION_STOCKS);
+
+        recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         if (savedInstanceState == null) {
             // Run the initialize task service so that some stocks appear upon an empty database
-            mServiceIntent.putExtra("tag", "init");
+            mServiceIntent.putExtra(Constants.TAG, Constants.INIT);
             if (isConnected()) {
                 startService(mServiceIntent);
             } else {
                 networkToast();
             }
         }
-        RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         getLoaderManager().initLoader(CURSOR_LOADER_ID, null, this);
 
@@ -79,7 +81,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                     public void onItemClick(View v, int position) {
                         if (mCursor != null && mCursor.moveToPosition(position)) {
                             Intent intent = new Intent(MyStocksActivity.this, StockDetailsActivity.class);
-                            intent.putExtra(StockDetailsActivity.SYMBOL, mCursor.getString(mCursor.getColumnIndex("symbol")));
+                            intent.putExtra(Constants.SYMBOL, mCursor.getString(mCursor.getColumnIndex(Constants.SYMBOL)));
                             startActivity(intent);
                         }
                     }
@@ -111,8 +113,8 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                                         return;
                                     } else {
                                         // Add the stock to DB
-                                        mServiceIntent.putExtra("tag", "add");
-                                        mServiceIntent.putExtra("symbol", input.toString());
+                                        mServiceIntent.putExtra(Constants.TAG, Constants.ADD);
+                                        mServiceIntent.putExtra(Constants.SYMBOL, input.toString());
                                         startService(mServiceIntent);
                                     }
                                 }
@@ -129,21 +131,19 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         ItemTouchHelper mItemTouchHelper = new ItemTouchHelper(callback);
         mItemTouchHelper.attachToRecyclerView(recyclerView);
 
-        mTitle = getTitle();
+        CharSequence mTitle = getTitle();
         getSupportActionBar().setDisplayShowTitleEnabled(true);
         getSupportActionBar().setTitle(mTitle);
         if (isConnected()) {
             long period = 3600L;
             long flex = 10L;
-            String periodicTag = "periodic";
-
             // create a periodic task to pull stocks once every hour after the app has been opened. This
             // is so Widget data stays up to date.
             PeriodicTask periodicTask = new PeriodicTask.Builder()
                     .setService(StockTaskService.class)
                     .setPeriod(period)
                     .setFlex(flex)
-                    .setTag(periodicTag)
+                    .setTag(Constants.PERIODIC)
                     .setRequiredNetwork(Task.NETWORK_STATE_CONNECTED)
                     .setRequiresCharging(false)
                     .build();
@@ -170,7 +170,7 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     }
 
     public void networkToast() {
-        Toast.makeText(this, getString(R.string.network_toast), Toast.LENGTH_SHORT).show();
+        Snackbar.make(recyclerView, getString(R.string.network_toast), Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
@@ -184,20 +184,15 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
+        switch (item.getItemId()) {
+            case R.id.action_settings:
+                return true;
+            case R.id.action_change_units:
+                mCursorAdapter.changePercent();
+            default:
+                return super.onOptionsItemSelected(item);
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
         }
-
-        if (id == R.id.action_change_units) {
-            // this is for changing stock changes from percent value to dollar value
-            Utils.showPercent = !Utils.showPercent;
-            this.getContentResolver().notifyChange(QuoteProvider.Quotes.CONTENT_URI, null);
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

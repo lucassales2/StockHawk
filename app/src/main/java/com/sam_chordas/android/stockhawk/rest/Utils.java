@@ -1,16 +1,11 @@
 package com.sam_chordas.android.stockhawk.rest;
 
 import android.content.ContentProviderOperation;
-import android.util.Log;
 
-import com.google.gson.Gson;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.networking.dto.QuoteDto;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.sam_chordas.android.stockhawk.networking.response.StockResponse;
 
 import java.util.ArrayList;
 
@@ -21,35 +16,14 @@ public class Utils {
 
     public static boolean showPercent = true;
     private static String LOG_TAG = Utils.class.getSimpleName();
-    private static Gson gson = new Gson();
 
-    public static ArrayList<ContentProviderOperation> quoteJsonToContentVals(String JSON) {
+    public static ArrayList<ContentProviderOperation> quoteJsonToContentVals(StockResponse response) {
         ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>();
-        JSONObject jsonObject = null;
-        JSONArray resultsArray = null;
-        try {
-            jsonObject = new JSONObject(JSON);
-            if (jsonObject != null && jsonObject.length() != 0) {
-                jsonObject = jsonObject.getJSONObject("query");
-                int count = Integer.parseInt(jsonObject.getString("count"));
-                if (count == 1) {
-                    jsonObject = jsonObject.getJSONObject("results")
-                            .getJSONObject("quote");
-                    batchOperations.add(buildBatchOperation(gson.fromJson(jsonObject.toString(), QuoteDto.class)));
-                } else {
-                    resultsArray = jsonObject.getJSONObject("results").getJSONArray("quote");
-
-                    if (resultsArray != null && resultsArray.length() != 0) {
-                        for (int i = 0; i < resultsArray.length(); i++) {
-                            jsonObject = resultsArray.getJSONObject(i);
-                            batchOperations.add(buildBatchOperation(gson.fromJson(jsonObject.toString(), QuoteDto.class)));
-                        }
-                    }
-                }
-            }
-        } catch (JSONException e) {
-            Log.e(LOG_TAG, "String to JSON failed: " + e);
+        for (QuoteDto quoteDto : response.getQuery().getQuote().getQuotes()) {
+            batchOperations.add(buildBatchOperation(quoteDto));
         }
+
+
         return batchOperations;
     }
 

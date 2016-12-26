@@ -12,6 +12,7 @@ import com.google.android.gms.gcm.TaskParams;
  */
 public class StockIntentService extends IntentService {
 
+
     public StockIntentService() {
         super(StockIntentService.class.getName());
     }
@@ -22,14 +23,25 @@ public class StockIntentService extends IntentService {
 
     @Override
     protected void onHandleIntent(Intent intent) {
-        Log.d(StockIntentService.class.getSimpleName(), "Stock Intent Service");
-        StockTaskService stockTaskService = new StockTaskService(this);
-        Bundle args = new Bundle();
-        if (intent.getStringExtra("tag").equals("add")) {
-            args.putString("symbol", intent.getStringExtra("symbol"));
+        if (intent != null) {
+            Log.d(StockIntentService.class.getSimpleName(), "Stock Intent Service");
+            if (intent.getAction().equals(Constants.ACTION_STOCKS)) {
+                StockTaskService stockTaskService = new StockTaskService(this);
+                Bundle args = new Bundle();
+                if (intent.getStringExtra(Constants.TAG).equals(Constants.ADD)) {
+                    args.putString(Constants.SYMBOL, intent.getStringExtra(Constants.SYMBOL));
+                }
+                // We can call OnRunTask from the intent service to force it to run immediately instead of
+                // scheduling a task.
+                stockTaskService.onRunTask(new TaskParams(intent.getStringExtra(Constants.TAG), args));
+            } else if (intent.getAction().equals(Constants.ACTION_STOCK_HISTORY)) {
+                StockHistoryTaskService stockHistoryTaskService = new StockHistoryTaskService(this);
+                Bundle args = new Bundle();
+                args.putString(Constants.SYMBOL, intent.getStringExtra(Constants.SYMBOL));
+                // We can call OnRunTask from the intent service to force it to run immediately instead of
+                // scheduling a task.
+                stockHistoryTaskService.onRunTask(new TaskParams(intent.getStringExtra(Constants.HISTORY), args));
+            }
         }
-        // We can call OnRunTask from the intent service to force it to run immediately instead of
-        // scheduling a task.
-        stockTaskService.onRunTask(new TaskParams(intent.getStringExtra("tag"), args));
     }
 }

@@ -10,4 +10,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.sam_chordas.android.stockhawk.ui.StockDetailsActivity">
 
+    <include layout="@layout/activity_line_graph" />
+
 </RelativeLayout>

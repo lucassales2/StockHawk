@@ -14,6 +14,7 @@
     <uses-permission android:name="com.google.android.gcm.demo.permission.C2D_MESSAGE" />
 
     <application
+        android:name=".StockHawkApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -36,6 +37,16 @@
                 <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
             </intent-filter>
         </service>
+
+        <service
+            android:name=".service.StockHistoryTaskService"
+            android:exported="true"
+            android:permission="com.google.android.gms.permission.BIND_NETWORK_TASK_SERVICE">
+            <intent-filter>
+                <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
+            </intent-filter>
+        </service>
+
         <service android:name=".service.StockIntentService" />
 
         <provider
@@ -43,7 +54,11 @@
             android:authorities="com.sam_chordas.android.stockhawk.data.QuoteProvider"
             android:exported="false" />
 
-        <activity android:name=".ui.StockDetailsActivity"></activity>
+        <activity android:name=".ui.StockDetailsActivity" />
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="d5f9d149e46bd5e4d10dfb6d97273b4be4bef1ec" />
     </application>
 
 </manifest>

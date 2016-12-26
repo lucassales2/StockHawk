@@ -28,6 +28,7 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
         implements ItemTouchHelperAdapter {
 
     private final Context mContext;
+    private boolean isPercent;
 
     public QuoteCursorAdapter(Context context, Cursor cursor) {
         super(cursor);
@@ -44,7 +45,7 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
         viewHolder.symbol.setText(cursor.getString(cursor.getColumnIndex("symbol")));
         viewHolder.bidPrice.setText(cursor.getString(cursor.getColumnIndex("bid_price")));
         viewHolder.change.setBackgroundResource(cursor.getInt(cursor.getColumnIndex("is_up")) == 1 ? R.drawable.percent_change_pill_green : percent_change_pill_red);
-        viewHolder.change.setText(Utils.showPercent ? cursor.getString(cursor.getColumnIndex("percent_change")) : cursor.getString(cursor.getColumnIndex("change")));
+        viewHolder.change.setText(isPercent ? cursor.getString(cursor.getColumnIndex("percent_change")) : cursor.getString(cursor.getColumnIndex("change")));
     }
 
     @Override
@@ -59,6 +60,11 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
     @Override
     public int getItemCount() {
         return super.getItemCount();
+    }
+
+    public void changePercent() {
+        isPercent = !isPercent;
+        notifyDataSetChanged();
     }
 
     class ViewHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder, View.OnClickListener {

@@ -5,39 +5,42 @@ import net.simonvt.schematic.annotation.DataType;
 import net.simonvt.schematic.annotation.NotNull;
 import net.simonvt.schematic.annotation.PrimaryKey;
 
+import static net.simonvt.schematic.annotation.DataType.Type.INTEGER;
+import static net.simonvt.schematic.annotation.DataType.Type.TEXT;
+
 /**
  * Created by sam_chordas on 10/5/15.
  */
-public class QuoteColumns {
-    @DataType(DataType.Type.INTEGER)
+public interface QuoteColumns {
+    @DataType(INTEGER)
     @PrimaryKey
     @AutoIncrement
-    public static final String _ID = "_id";
+    String _ID = "_id";
 
-    @DataType(DataType.Type.TEXT)
+    @DataType(TEXT)
     @NotNull
-    public static final String SYMBOL = "symbol";
+    String SYMBOL = "symbol";
 
-    @DataType(DataType.Type.TEXT)
+    @DataType(TEXT)
     @NotNull
-    public static final String PERCENT_CHANGE = "percent_change";
+    String PERCENT_CHANGE = "percent_change";
 
-    @DataType(DataType.Type.TEXT)
+    @DataType(TEXT)
     @NotNull
-    public static final String CHANGE = "change";
+    String CHANGE = "change";
 
-    @DataType(DataType.Type.TEXT)
+    @DataType(TEXT)
     @NotNull
-    public static final String BIDPRICE = "bid_price";
+    String BIDPRICE = "bid_price";
 
-    @DataType(DataType.Type.TEXT)
-    public static final String CREATED = "created";
+    @DataType(TEXT)
+    String CREATED = "created";
 
-    @DataType(DataType.Type.INTEGER)
+    @DataType(INTEGER)
     @NotNull
-    public static final String ISUP = "is_up";
+    String ISUP = "is_up";
 
-    @DataType(DataType.Type.INTEGER)
+    @DataType(INTEGER)
     @NotNull
-    public static final String ISCURRENT = "is_current";
+    String ISCURRENT = "is_current";
 }

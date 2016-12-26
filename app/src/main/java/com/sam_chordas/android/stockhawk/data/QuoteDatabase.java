@@ -12,6 +12,9 @@ public class QuoteDatabase {
     @Table(QuoteColumns.class)
     public static final String QUOTES = "quotes";
 
+    @Table(QuoteHistoryColumns.class)
+    public static final String QUOTES_HISTORY = "quotesHistory";
+
     private QuoteDatabase() {
     }
 }
