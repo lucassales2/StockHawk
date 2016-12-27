@@ -17,7 +17,7 @@ public class Utils {
     public static boolean showPercent = true;
     private static String LOG_TAG = Utils.class.getSimpleName();
 
-    public static ArrayList<ContentProviderOperation> quoteJsonToContentVals(StockResponse response) {
+    public static ArrayList<ContentProviderOperation> quoteReponseToContentVals(StockResponse response) {
         ArrayList<ContentProviderOperation> batchOperations = new ArrayList<>();
         for (QuoteDto quoteDto : response.getQuery().getQuote().getQuotes()) {
             batchOperations.add(buildBatchOperation(quoteDto));

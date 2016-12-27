@@ -41,6 +41,7 @@ public class StockTaskService extends GcmTaskService {
 
 
     public StockTaskService() {
+        this(StockHawkApplication.getInstance());
     }
 
     public StockTaskService(Context context) {
@@ -51,9 +52,6 @@ public class StockTaskService extends GcmTaskService {
 
     @Override
     public int onRunTask(TaskParams params) {
-        if (mContext == null) {
-            return GcmNetworkManager.RESULT_FAILURE;
-        }
         StockResponse getResponse;
         int result = GcmNetworkManager.RESULT_FAILURE;
 
@@ -70,7 +68,7 @@ public class StockTaskService extends GcmTaskService {
                             null, null);
                 }
                 mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
-                        Utils.quoteJsonToContentVals(getResponse));
+                        Utils.quoteReponseToContentVals(getResponse));
             } catch (RemoteException | OperationApplicationException e) {
                 Log.e(LOG_TAG, "Error applying batch insert", e);
             }
