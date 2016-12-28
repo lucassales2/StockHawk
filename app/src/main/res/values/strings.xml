@@ -10,4 +10,10 @@
     <string name="input_hint">FB</string>
     <string name="input_prefill"></string>
     <string name="network_toast">Uh-oh! This app requires an internet connection</string>
+    <string name="five_days">5d</string>
+    <string name="one_month">1m</string>
+    <string name="three_months">3m</string>
+    <string name="one_year">1y</string>
+    <string name="five_years">5y</string>
+    <string name="max_time">Max</string>
 </resources>

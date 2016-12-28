@@ -9,4 +9,5 @@ public class QuoteDto {
     public String Change;
     public String Bid;
     public String ChangeinPercent;
+    public String Name;
 }

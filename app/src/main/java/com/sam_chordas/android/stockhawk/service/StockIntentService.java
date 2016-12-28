@@ -36,8 +36,11 @@ public class StockIntentService extends IntentService {
                 stockTaskService.onRunTask(new TaskParams(intent.getStringExtra(Constants.TAG), args));
             } else if (intent.getAction().equals(Constants.ACTION_STOCK_HISTORY)) {
                 StockHistoryTaskService stockHistoryTaskService = new StockHistoryTaskService(this);
+                Bundle extras = intent.getExtras();
                 Bundle args = new Bundle();
-                args.putString(Constants.SYMBOL, intent.getStringExtra(Constants.SYMBOL));
+                args.putString(Constants.SYMBOL, extras.getString(Constants.SYMBOL));
+                args.putString(Constants.START_DATE, extras.getString(Constants.START_DATE, ""));
+                args.putString(Constants.END_DATE, extras.getString(Constants.END_DATE, ""));
                 // We can call OnRunTask from the intent service to force it to run immediately instead of
                 // scheduling a task.
                 stockHistoryTaskService.onRunTask(new TaskParams(intent.getStringExtra(Constants.HISTORY), args));
