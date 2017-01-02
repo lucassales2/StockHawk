@@ -3,6 +3,7 @@ package com.sam_chordas.android.stockhawk.service;
 import android.content.ContentProviderOperation;
 import android.content.Context;
 import android.content.OperationApplicationException;
+import android.database.Cursor;
 import android.os.RemoteException;
 import android.util.Log;
 
@@ -26,6 +27,8 @@ import java.util.Date;
 import javax.inject.Inject;
 
 import retrofit2.Call;
+
+import static com.google.android.gms.gcm.GcmNetworkManager.RESULT_SUCCESS;
 
 /**
  * Created by lucas on 19/12/16.
@@ -55,50 +58,60 @@ public class StockHistoryTaskService extends GcmTaskService {
         if (mContext != null) {
             try {
                 String symbol = params.getExtras().getString(Constants.SYMBOL);
-                String startDate = params.getExtras().getString(Constants.START_DATE);
-                String endDate = params.getExtras().getString(Constants.END_DATE);
-                if (startDate.isEmpty() || endDate.isEmpty()) {
+                String startDateString = params.getExtras().getString(Constants.START_DATE);
+                String endDateString = params.getExtras().getString(Constants.END_DATE);
+                Date currentDate = new Date();
+                String currentDateString = simpleDateFormat.format(currentDate);
+                if (startDateString.isEmpty() || endDateString.isEmpty()) {
                     Calendar calendar = Calendar.getInstance();
-                    Date currentDate = new Date();
                     calendar.setTime(currentDate);
                     calendar.set(Calendar.MONTH, calendar.get(Calendar.MONTH) - 1);
-                    startDate = simpleDateFormat.format(calendar.getTime());
-                    endDate = simpleDateFormat.format(currentDate);
+                    if (startDateString.isEmpty())
+                        startDateString = simpleDateFormat.format(calendar.getTime());
+                    if (endDateString.isEmpty())
+                        endDateString = currentDateString;
                 }
 
-//
-//                Cursor cursorLatestDate = mContext.getContentResolver().query(
-//                        QuoteProvider.QuotesHistory.CONTENT_URI,
-//                        new String[]{QuoteHistoryColumns.DATE},
-//                        QuoteHistoryColumns.SYMBOL + "=?",
-//                        new String[]{symbol},
-//                        QuoteHistoryColumns.DATE + " desc limit 1");
-//
-//                Cursor cursorEarlierstDate = mContext.getContentResolver().query(
-//                        QuoteProvider.QuotesHistory.CONTENT_URI,
-//                        new String[]{QuoteHistoryColumns.DATE},
-//                        QuoteHistoryColumns.SYMBOL + "=?",
-//                        new String[]{symbol},
-//                        QuoteHistoryColumns.DATE + " asc limit 1");
-//
-//                if (cursorLatestDate.moveToFirst()) {
-//                    Date earliestDate = simpleDateFormat.parse(cursorEarlierstDate.getString(0));
-//                    if (simpleDateFormat.parse(startDate).after(earliestDate)) {
-//                        startDate = simpleDateFormat.format(lates);
-//                    }
-//                }
+
+                Cursor cursorLatestDate = mContext.getContentResolver().query(
+                        QuoteProvider.QuotesHistory.CONTENT_URI,
+                        new String[]{QuoteHistoryColumns.DATE},
+                        QuoteHistoryColumns.SYMBOL + "=?",
+                        new String[]{symbol},
+                        QuoteHistoryColumns.DATE + " desc limit 1");
+
+                Cursor cursorEarlierstDate = mContext.getContentResolver().query(
+                        QuoteProvider.QuotesHistory.CONTENT_URI,
+                        new String[]{QuoteHistoryColumns.DATE},
+                        QuoteHistoryColumns.SYMBOL + "=?",
+                        new String[]{symbol},
+                        QuoteHistoryColumns.DATE + " asc limit 1");
+
+
+                if (cursorEarlierstDate.moveToFirst() && cursorLatestDate.moveToFirst()) {
+                    Date earliestDateInDb = simpleDateFormat.parse(cursorEarlierstDate.getString(0));
+                    Date startDate = simpleDateFormat.parse(startDateString);
+                    Date endDate = simpleDateFormat.parse(endDateString);
+                    Date latestDateInDb = simpleDateFormat.parse(cursorLatestDate.getString(0));
+                    if (startDate.after(earliestDateInDb)) {
+                        startDate = latestDateInDb;
+                    }
+                    if (startDate.after(endDate) || startDate.equals(endDate)) {
+                        return RESULT_SUCCESS;
+                    }
+                }
 
                 Call<StockHistoryResponse> stockHistoricalData = quoteApiService.getStockHistoricalData(buildQuoteHistoryQuery(
                         symbol,
-                        startDate,
-                        endDate));
+                        startDateString,
+                        endDateString));
 
                 retrofit2.Response<StockHistoryResponse> response = stockHistoricalData.execute();
                 if (response.isSuccessful()) {
                     StockHistoryResponse body = response.body();
                     mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
                             quoteReponseToContentVals(body));
-                    return GcmNetworkManager.RESULT_SUCCESS;
+                    return RESULT_SUCCESS;
                 } else {
                     Log.e(LOG_TAG, response.errorBody().string());
                 }

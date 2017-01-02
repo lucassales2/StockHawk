@@ -34,6 +34,10 @@ public interface QuoteColumns {
     String BIDPRICE = "bid_price";
 
     @DataType(TEXT)
+    @NotNull
+    String NAME = "name";
+
+    @DataType(TEXT)
     String CREATED = "created";
 
     @DataType(INTEGER)

@@ -51,13 +51,14 @@ public class Utils {
     public static ContentProviderOperation buildBatchOperation(QuoteDto quoteDto) {
         ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
                 QuoteProvider.Quotes.CONTENT_URI);
-        String change = quoteDto.Change;
-        builder.withValue(QuoteColumns.SYMBOL, quoteDto.Symbol);
-        builder.withValue(QuoteColumns.BIDPRICE, truncateBidPrice(quoteDto.Bid));
+        String change = quoteDto.getChange();
+        builder.withValue(QuoteColumns.SYMBOL, quoteDto.getSymbol());
+        builder.withValue(QuoteColumns.BIDPRICE, truncateBidPrice(quoteDto.getBid()));
         builder.withValue(QuoteColumns.PERCENT_CHANGE, truncateChange(
-                quoteDto.ChangeinPercent, true));
+                quoteDto.getChangeinPercent(), true));
         builder.withValue(QuoteColumns.CHANGE, truncateChange(change, false));
         builder.withValue(QuoteColumns.ISCURRENT, 1);
+        builder.withValue(QuoteColumns.NAME, quoteDto.getName());
         builder.withValue(QuoteColumns.ISUP, change.charAt(0) == '-' ? 0 : 1);
 
         return builder.build();

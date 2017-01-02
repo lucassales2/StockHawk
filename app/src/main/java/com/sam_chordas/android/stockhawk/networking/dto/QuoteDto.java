@@ -5,9 +5,29 @@ package com.sam_chordas.android.stockhawk.networking.dto;
  */
 
 public class QuoteDto {
-    public String Symbol;
-    public String Change;
-    public String Bid;
-    public String ChangeinPercent;
-    public String Name;
+    private String Symbol;
+    private String Change;
+    private String Bid;
+    private String ChangeinPercent;
+    private String Name;
+
+    public String getBid() {
+        return Bid;
+    }
+
+    public String getChange() {
+        return Change;
+    }
+
+    public String getChangeinPercent() {
+        return ChangeinPercent;
+    }
+
+    public String getName() {
+        return Name;
+    }
+
+    public String getSymbol() {
+        return Symbol;
+    }
 }

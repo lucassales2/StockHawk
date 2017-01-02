@@ -16,4 +16,5 @@
     <string name="one_year">1y</string>
     <string name="five_years">5y</string>
     <string name="max_time">Max</string>
+    <string name="last_update" translatable="false">lastUpdate</string>
 </resources>
