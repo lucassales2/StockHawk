@@ -16,24 +16,18 @@ import io.fabric.sdk.android.Fabric;
 
 public class StockHawkApplication extends Application {
 
-    private static StockHawkApplication instance;
-    private ApplicationComponent component;
+    private static ApplicationComponent component;
 
-    public static StockHawkApplication getInstance() {
-        return instance;
-    }
-
-    public ApplicationComponent getComponent() {
+    public static ApplicationComponent getComponent() {
         return component;
     }
 
     @Override
     public void onCreate() {
         super.onCreate();
-        instance = this;
         Fabric.with(this, new Crashlytics());
         component = DaggerApplicationComponent.builder()
-                .appModule(new AppModule())
+                .appModule(new AppModule(this))
                 .networkModule(new NetworkModule())
                 .build();
     }

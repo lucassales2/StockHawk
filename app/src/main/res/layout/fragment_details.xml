@@ -1,17 +1,163 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
-    <android.support.design.widget.TabLayout
-        android:id="@+id/tablayout"
+    <data>
+
+        <variable
+            name="quote"
+            type="com.sam_chordas.android.stockhawk.ui.viewmodel.QuoteViewModel" />
+    </data>
+
+    <LinearLayout 
         android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
-    <com.db.chart.view.LineChartView
-        android:id="@+id/linechart"
-        android:layout_width="match_parent"
-        android:layout_height="200dp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{quote.name}" />
 
-</LinearLayout>
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@{quote.symbolAndLastUpdate}" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{quote.bid}" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{quote.currency}" />
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@{quote.isUp ? @drawable/ic_pointing_up_arrow : @drawable/ic_pointing_down_arrow}" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{quote.change}" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{quote.changeinPercent}" />
+
+        </LinearLayout>
+
+
+        <android.support.design.widget.TabLayout
+            android:id="@+id/tablayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <com.db.chart.view.LineChartView
+            android:id="@+id/linechart"
+            android:layout_width="match_parent"
+            android:layout_height="200dp" />
+
+        <android.support.v7.widget.GridLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/activity_horizontal_margin"
+            app:columnCount="4">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/opening_label"
+                app:layout_columnSpan="1"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="1" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{quote.open}"
+                app:layout_columnSpan="1"
+                app:layout_columnWeight="2"
+                app:layout_rowWeight="1" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/day_high_label"
+                app:layout_columnSpan="1"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="2" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{quote.daysHigh}"
+                app:layout_columnSpan="1"
+                app:layout_columnWeight="2"
+                app:layout_rowWeight="2" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/day_low_label"
+                app:layout_columnSpan="1"
+                app:layout_columnWeight="1"
+                app:layout_rowWeight="3" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{quote.daysLow}"
+                app:layout_columnSpan="1"
+                app:layout_columnWeight="2"
+                app:layout_rowWeight="3" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/year_high_label"
+                app:layout_columnSpan="1"
+                app:layout_columnWeight="3"
+                app:layout_rowWeight="2" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{quote.yearHigh}"
+                app:layout_columnSpan="1"
+                app:layout_columnWeight="4"
+                app:layout_rowWeight="2" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/year_low_label"
+                app:layout_columnSpan="1"
+                app:layout_columnWeight="3"
+                app:layout_rowWeight="3" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@{quote.yearLow}"
+                app:layout_columnSpan="1"
+                app:layout_columnWeight="4"
+                app:layout_rowWeight="3" />
+        </android.support.v7.widget.GridLayout>
+
+    </LinearLayout>
+</layout>

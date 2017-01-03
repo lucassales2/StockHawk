@@ -1,5 +1,6 @@
 package com.sam_chordas.android.stockhawk.binding;
 
+import com.sam_chordas.android.stockhawk.rest.QuoteCursorAdapter;
 import com.sam_chordas.android.stockhawk.service.StockHistoryTaskService;
 import com.sam_chordas.android.stockhawk.service.StockTaskService;
 import com.sam_chordas.android.stockhawk.ui.StockDetailsFragment;
@@ -20,4 +21,6 @@ public interface ApplicationComponent {
     void inject(StockHistoryTaskService stockHistoryTaskService);
 
     void inject(StockDetailsFragment fragment);
+
+    void inject(QuoteCursorAdapter adapter);
 }

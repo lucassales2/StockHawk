@@ -41,39 +41,42 @@ public class StockTaskService extends GcmTaskService {
 
 
     public StockTaskService() {
-        this(StockHawkApplication.getInstance());
+
     }
 
     public StockTaskService(Context context) {
-        StockHawkApplication.getInstance().getComponent().inject(this);
+        StockHawkApplication.getComponent().inject(this);
         mContext = context.getApplicationContext();
     }
 
 
     @Override
     public int onRunTask(TaskParams params) {
-        StockResponse getResponse;
         int result = GcmNetworkManager.RESULT_FAILURE;
+        if (mContext != null) {
+            StockResponse getResponse;
 
-        try {
-            Call<StockResponse> call = apiService.getStock(buildQuoteQuery(params));
-            getResponse = call.execute().body();
-            result = GcmNetworkManager.RESULT_SUCCESS;
             try {
-                ContentValues contentValues = new ContentValues();
-                // update ISCURRENT to 0 (false) so new data is current
-                if (isUpdate) {
-                    contentValues.put(QuoteColumns.ISCURRENT, 0);
-                    mContext.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues,
-                            null, null);
+                Call<StockResponse> call = apiService.getStock(buildQuoteQuery(params));
+                getResponse = call.execute().body();
+                result = GcmNetworkManager.RESULT_SUCCESS;
+                try {
+                    ContentValues contentValues = new ContentValues();
+                    // update ISCURRENT to 0 (false) so new data is current
+                    if (isUpdate) {
+                        contentValues.put(QuoteColumns.ISCURRENT, 0);
+                        mContext.getContentResolver().update(QuoteProvider.Quotes.CONTENT_URI, contentValues,
+                                null, null);
+                    }
+
+                    mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
+                            Utils.quoteReponseToContentVals(getResponse));
+                } catch (RemoteException | OperationApplicationException e) {
+                    Log.e(LOG_TAG, "Error applying batch insert", e);
                 }
-                mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
-                        Utils.quoteReponseToContentVals(getResponse));
-            } catch (RemoteException | OperationApplicationException e) {
-                Log.e(LOG_TAG, "Error applying batch insert", e);
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         return result;

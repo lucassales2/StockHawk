@@ -49,7 +49,7 @@ public class StockHistoryTaskService extends GcmTaskService {
 
     public StockHistoryTaskService(Context context) {
         mContext = context.getApplicationContext();
-        StockHawkApplication.getInstance().getComponent().inject(this);
+        StockHawkApplication.getComponent().inject(this);
     }
 
 

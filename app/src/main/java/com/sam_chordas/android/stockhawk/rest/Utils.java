@@ -60,6 +60,13 @@ public class Utils {
         builder.withValue(QuoteColumns.ISCURRENT, 1);
         builder.withValue(QuoteColumns.NAME, quoteDto.getName());
         builder.withValue(QuoteColumns.ISUP, change.charAt(0) == '-' ? 0 : 1);
+        builder.withValue(QuoteColumns.OPEN, quoteDto.getOpen());
+        builder.withValue(QuoteColumns.YEAR_HIGH, quoteDto.getYearHigh());
+        builder.withValue(QuoteColumns.YEAR_LOW, quoteDto.getYearLow());
+        builder.withValue(QuoteColumns.DAYS_HIGH, quoteDto.getDaysHigh());
+        builder.withValue(QuoteColumns.DAYS_LOW, quoteDto.getDaysLow());
+        builder.withValue(QuoteColumns.CURRENCY, quoteDto.getCurrency());
+        builder.withValue(QuoteColumns.LAST_UPDATE, System.currentTimeMillis());
 
         return builder.build();
     }

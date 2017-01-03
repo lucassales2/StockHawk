@@ -29,7 +29,6 @@ public interface QuoteHistoryColumns {
     @NotNull
     String SYMBOL = "symbol";
 
-
     @DataType(REAL)
     @NotNull
     String BIDPRICE = "bid_price";

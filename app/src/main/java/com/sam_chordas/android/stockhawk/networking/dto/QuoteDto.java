@@ -10,6 +10,36 @@ public class QuoteDto {
     private String Bid;
     private String ChangeinPercent;
     private String Name;
+    private String DaysLow;
+    private String DaysHigh;
+    private String YearLow;
+    private String YearHigh;
+    private String Open;
+    private String Currency;
+
+    public String getCurrency() {
+        return Currency;
+    }
+
+    public String getOpen() {
+        return Open;
+    }
+
+    public String getYearLow() {
+        return YearLow;
+    }
+
+    public String getDaysHigh() {
+        return DaysHigh;
+    }
+
+    public String getDaysLow() {
+        return DaysLow;
+    }
+
+    public String getYearHigh() {
+        return YearHigh;
+    }
 
     public String getBid() {
         return Bid;
@@ -30,4 +60,6 @@ public class QuoteDto {
     public String getSymbol() {
         return Symbol;
     }
+
+
 }

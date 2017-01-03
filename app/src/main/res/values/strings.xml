@@ -1,7 +1,5 @@
 <resources>
-    <string name="app_name">Stock Hawk</string>
-
-    <string name="action_example">Example action</string>
+    <string name="app_name" translatable="false">Stock Hawk</string>
 
     <string name="action_settings">Settings</string>
     <string name="action_change_units">Change Units</string>
@@ -17,4 +15,9 @@
     <string name="five_years">5y</string>
     <string name="max_time">Max</string>
     <string name="last_update" translatable="false">lastUpdate</string>
+    <string name="opening_label">Opening</string>
+    <string name="day_high_label">Daily high</string>
+    <string name="day_low_label">Daily low</string>
+    <string name="year_high_label">Year high</string>
+    <string name="year_low_label">Year low</string>
 </resources>

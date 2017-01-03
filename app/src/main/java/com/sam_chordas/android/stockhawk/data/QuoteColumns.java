@@ -44,7 +44,35 @@ public interface QuoteColumns {
     @NotNull
     String ISUP = "is_up";
 
+    @DataType(TEXT)
+    @NotNull
+    String OPEN = "open";
+
+    @DataType(TEXT)
+    @NotNull
+    String DAYS_LOW = "days_low";
+    @DataType(TEXT)
+    @NotNull
+    String DAYS_HIGH = "days_high";
+
+    @DataType(TEXT)
+    @NotNull
+    String YEAR_LOW = "year_low";
+
+    @DataType(TEXT)
+    @NotNull
+    String YEAR_HIGH = "year_high";
+
     @DataType(INTEGER)
     @NotNull
     String ISCURRENT = "is_current";
+
+    @DataType(INTEGER)
+    @NotNull
+    String LAST_UPDATE = "last_update";
+
+    @DataType(TEXT)
+    @NotNull
+    String CURRENCY = "currency";
+
 }

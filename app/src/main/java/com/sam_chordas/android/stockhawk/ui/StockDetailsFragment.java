@@ -3,6 +3,8 @@ package com.sam_chordas.android.stockhawk.ui;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.databinding.DataBindingUtil;
+import android.databinding.ViewDataBinding;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -19,12 +21,14 @@ import android.view.ViewGroup;
 import com.db.chart.model.LineSet;
 import com.db.chart.model.Point;
 import com.db.chart.view.LineChartView;
+import com.sam_chordas.android.stockhawk.BR;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.StockHawkApplication;
 import com.sam_chordas.android.stockhawk.data.QuoteHistoryColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.service.Constants;
 import com.sam_chordas.android.stockhawk.service.StockIntentService;
+import com.sam_chordas.android.stockhawk.ui.viewmodel.QuoteViewModel;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -40,12 +44,14 @@ import javax.inject.Inject;
 
 public class StockDetailsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    private static final int LOADER_ID = 671;
+    private static final int LOADER_HISTORY_ID = 671;
+    private static final int LOADER_DETAILS_ID = 672;
     private static final String LIMIT = "limit";
     private static final String START_DATE = Constants.START_DATE;
 
     @Inject
     SimpleDateFormat simpleDateFormat;
+    private ViewDataBinding dataBinding;
     private LineChartView lineChartView;
     private TabLayout tabLayout;
 
@@ -61,13 +67,14 @@ public class StockDetailsFragment extends Fragment implements LoaderManager.Load
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(LOADER_ID, null, this);
+        getLoaderManager().initLoader(LOADER_HISTORY_ID, null, this);
+        getLoaderManager().initLoader(LOADER_DETAILS_ID, null, this);
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        StockHawkApplication.getInstance().getComponent().inject(this);
+        StockHawkApplication.getComponent().inject(this);
         if (savedInstanceState == null) {
             Intent mServiceIntent = new Intent(getActivity(), StockIntentService.class);
             mServiceIntent.setAction(Constants.ACTION_STOCK_HISTORY);
@@ -79,7 +86,8 @@ public class StockDetailsFragment extends Fragment implements LoaderManager.Load
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.fragment_details, container, false);
+        dataBinding = DataBindingUtil.inflate(inflater, R.layout.fragment_details, container, false);
+        View rootView = dataBinding.getRoot();
         lineChartView = (LineChartView) rootView.findViewById(R.id.linechart);
         tabLayout = (TabLayout) rootView.findViewById(R.id.tablayout);
         setupTablayout();
@@ -95,7 +103,7 @@ public class StockDetailsFragment extends Fragment implements LoaderManager.Load
                 instance.setTime(new Date());
                 if (tab.getText().equals(getString(R.string.five_days))) {
                     b.putInt(LIMIT, 5);
-                    getLoaderManager().restartLoader(LOADER_ID, b, StockDetailsFragment.this);
+                    getLoaderManager().restartLoader(LOADER_HISTORY_ID, b, StockDetailsFragment.this);
                 } else if (tab.getText().equals(getString(R.string.one_month))) {
                     b.putString(START_DATE, "-1 month");
                     Intent mServiceIntent = new Intent(getActivity(), StockIntentService.class);
@@ -104,7 +112,7 @@ public class StockDetailsFragment extends Fragment implements LoaderManager.Load
                     instance.set(Calendar.MONTH, instance.get(Calendar.MONTH) - 1);
                     mServiceIntent.putExtra(Constants.START_DATE, simpleDateFormat.format(instance.getTime()));
                     getActivity().startService(mServiceIntent);
-                    getLoaderManager().restartLoader(LOADER_ID, b, StockDetailsFragment.this);
+                    getLoaderManager().restartLoader(LOADER_HISTORY_ID, b, StockDetailsFragment.this);
                 } else if (tab.getText().equals(getString(R.string.three_months))) {
                     b.putString(START_DATE, "-3 months");
                     Intent mServiceIntent = new Intent(getActivity(), StockIntentService.class);
@@ -113,7 +121,7 @@ public class StockDetailsFragment extends Fragment implements LoaderManager.Load
                     instance.set(Calendar.MONTH, instance.get(Calendar.MONTH) - 3);
                     mServiceIntent.putExtra(Constants.START_DATE, simpleDateFormat.format(instance.getTime()));
                     getActivity().startService(mServiceIntent);
-                    getLoaderManager().restartLoader(LOADER_ID, b, StockDetailsFragment.this);
+                    getLoaderManager().restartLoader(LOADER_HISTORY_ID, b, StockDetailsFragment.this);
                 } else if (tab.getText().equals(getString(R.string.one_year))) {
                     b.putString(START_DATE, "-1 year");
                     Intent mServiceIntent = new Intent(getActivity(), StockIntentService.class);
@@ -122,7 +130,7 @@ public class StockDetailsFragment extends Fragment implements LoaderManager.Load
                     instance.set(Calendar.YEAR, instance.get(Calendar.YEAR) - 1);
                     mServiceIntent.putExtra(Constants.START_DATE, simpleDateFormat.format(instance.getTime()));
                     getActivity().startService(mServiceIntent);
-                    getLoaderManager().restartLoader(LOADER_ID, b, StockDetailsFragment.this);
+                    getLoaderManager().restartLoader(LOADER_HISTORY_ID, b, StockDetailsFragment.this);
                 } else if (tab.getText().equals(getString(R.string.five_years))) {
                     b.putString(START_DATE, "-5 years");
                     Intent mServiceIntent = new Intent(getActivity(), StockIntentService.class);
@@ -131,9 +139,9 @@ public class StockDetailsFragment extends Fragment implements LoaderManager.Load
                     instance.set(Calendar.YEAR, instance.get(Calendar.YEAR) - 5);
                     mServiceIntent.putExtra(Constants.START_DATE, simpleDateFormat.format(instance.getTime()));
                     getActivity().startService(mServiceIntent);
-                    getLoaderManager().restartLoader(LOADER_ID, b, StockDetailsFragment.this);
+                    getLoaderManager().restartLoader(LOADER_HISTORY_ID, b, StockDetailsFragment.this);
                 } else if (tab.getText().equals(getString(R.string.max_time))) {
-                    getLoaderManager().restartLoader(LOADER_ID, b, StockDetailsFragment.this);
+                    getLoaderManager().restartLoader(LOADER_HISTORY_ID, b, StockDetailsFragment.this);
                 }
             }
 
@@ -161,25 +169,36 @@ public class StockDetailsFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if (args.containsKey(START_DATE)) {
-            return new CursorLoader(getContext(), QuoteProvider.QuotesHistory.CONTENT_URI,
-                    new String[]{QuoteHistoryColumns.DATE, QuoteHistoryColumns.BIDPRICE},
-                    QuoteHistoryColumns.SYMBOL + " =? AND " + QuoteHistoryColumns.DATE + " >= date('now',\'" + args.getString(START_DATE) + "\')",
-                    new String[]{getArguments().getString(Constants.SYMBOL)},
-                    QuoteHistoryColumns.DATE + " desc");
+        if (id == LOADER_HISTORY_ID) {
+            if (args.containsKey(START_DATE)) {
+                return new CursorLoader(getContext(), QuoteProvider.QuotesHistory.CONTENT_URI,
+                        new String[]{QuoteHistoryColumns.DATE, QuoteHistoryColumns.BIDPRICE},
+                        QuoteHistoryColumns.SYMBOL + " =? AND " + QuoteHistoryColumns.DATE + " >= date('now',\'" + args.getString(START_DATE) + "\')",
+                        new String[]{getArguments().getString(Constants.SYMBOL)},
+                        QuoteHistoryColumns.DATE + " desc");
+            } else {
+                return new CursorLoader(getContext(), QuoteProvider.QuotesHistory.CONTENT_URI,
+                        new String[]{QuoteHistoryColumns.DATE, QuoteHistoryColumns.BIDPRICE},
+                        QuoteHistoryColumns.SYMBOL + " = ?",
+                        new String[]{getArguments().getString(Constants.SYMBOL)},
+                        QuoteHistoryColumns.DATE + " desc limit 5");
+            }
+        } else if (id == LOADER_DETAILS_ID) {
+            return new CursorLoader(getContext(), QuoteProvider.Quotes.withSymbol(getArguments().getString(Constants.SYMBOL)), null, null, null, null);
         } else {
-            return new CursorLoader(getContext(), QuoteProvider.QuotesHistory.CONTENT_URI,
-                    new String[]{QuoteHistoryColumns.DATE, QuoteHistoryColumns.BIDPRICE},
-                    QuoteHistoryColumns.SYMBOL + " = ?",
-                    new String[]{getArguments().getString(Constants.SYMBOL)},
-                    QuoteHistoryColumns.DATE + " desc limit 5");
+            throw new IllegalArgumentException();
         }
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        if (loader.getId() == LOADER_ID && cursor.moveToFirst()) {
-            drawChart(cursor);
+        if (cursor.moveToFirst()) {
+            if (loader.getId() == LOADER_HISTORY_ID) {
+                drawChart(cursor);
+            } else if (loader.getId() == LOADER_DETAILS_ID) {
+                QuoteViewModel quoteViewModel = new QuoteViewModel(cursor);
+                dataBinding.setVariable(BR.quote, quoteViewModel);
+            }
         }
 
     }
@@ -236,6 +255,6 @@ public class StockDetailsFragment extends Fragment implements LoaderManager.Load
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        lineChartView.reset();
+
     }
 }
