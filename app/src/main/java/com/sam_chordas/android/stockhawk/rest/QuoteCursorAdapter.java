@@ -3,7 +3,6 @@ package com.sam_chordas.android.stockhawk.rest;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Color;
-import android.graphics.Typeface;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,8 +15,7 @@ import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
 import com.sam_chordas.android.stockhawk.touch_helper.ItemTouchHelperAdapter;
 import com.sam_chordas.android.stockhawk.touch_helper.ItemTouchHelperViewHolder;
-
-import javax.inject.Inject;
+import com.sam_chordas.android.stockhawk.ui.AppFonts;
 
 import static com.sam_chordas.android.stockhawk.R.drawable.percent_change_pill_red;
 
@@ -31,8 +29,6 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
         implements ItemTouchHelperAdapter {
 
     private final Context mContext;
-    @Inject
-    Typeface defaultFont;
     private boolean isPercent;
 
     public QuoteCursorAdapter(Context context, Cursor cursor) {
@@ -81,9 +77,11 @@ public class QuoteCursorAdapter extends CursorRecyclerViewAdapter<QuoteCursorAda
         private ViewHolder(View itemView) {
             super(itemView);
             symbol = (TextView) itemView.findViewById(R.id.stock_symbol);
-            symbol.setTypeface(defaultFont);
+            symbol.setTypeface(AppFonts.getLight(itemView.getContext()));
             bidPrice = (TextView) itemView.findViewById(R.id.bid_price);
+            bidPrice.setTypeface(AppFonts.getMedium(itemView.getContext()));
             change = (TextView) itemView.findViewById(R.id.change);
+            change.setTypeface(AppFonts.getMedium(itemView.getContext()));
         }
 
         @Override

@@ -1,163 +1,257 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:chart="http://schemas.android.com/tools">
 
     <data>
 
         <variable
             name="quote"
             type="com.sam_chordas.android.stockhawk.ui.viewmodel.QuoteViewModel" />
+
+        <import type="com.sam_chordas.android.stockhawk.ui.AppFonts.FontStyle" />
     </data>
 
-    <LinearLayout 
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
+
+        <android.support.design.widget.AppBarLayout
+            android:id="@+id/appbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{quote.name}" />
+            android:paddingEnd="@dimen/activity_horizontal_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingStart="@dimen/activity_horizontal_margin">
 
-        <TextView
+
+            <android.support.design.widget.CollapsingToolbarLayout
+                android:id="@+id/collapsing_toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fitsSystemWindows="true"
+                app:contentScrim="?attr/colorPrimary"
+                app:layout_scrollFlags="scroll|exitUntilCollapsed">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@{quote.symbolAndLastUpdate}"
+                        android:textSize="@dimen/textsize_large"
+                        app:font="@{FontStyle.Medium}" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginEnd="@dimen/small_margin"
+                            android:layout_marginRight="@dimen/small_margin"
+                            android:text="@{quote.bid}"
+                            android:textSize="@dimen/textsize_normal" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginEnd="@dimen/default_margin"
+                            android:layout_marginRight="@dimen/default_margin"
+                            android:text="@{quote.currency}"
+                            android:textSize="@dimen/textsize_small" />
+
+
+                        <TextView
+                            style="@style/PercentChangeTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:background="@{quote.isUp ? @drawable/percent_change_pill_green : @drawable/percent_change_pill_red}"
+                            android:paddingEnd="16dp"
+                            android:paddingLeft="3dp"
+                            android:paddingRight="3dp"
+                            android:paddingStart="16dp"
+                            android:text="@{quote.change}" />
+
+
+                        <TextView
+                            style="@style/PercentChangeTextStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginLeft="@dimen/default_margin"
+                            android:layout_marginStart="@dimen/default_margin"
+                            android:background="@{quote.isUp ? @drawable/percent_change_pill_green : @drawable/percent_change_pill_red}"
+                            android:paddingEnd="16dp"
+                            android:paddingLeft="3dp"
+                            android:paddingRight="3dp"
+                            android:paddingStart="16dp"
+                            android:text="@{quote.changeinPercent}" />
+                    </LinearLayout>
+
+                    <android.support.design.widget.TabLayout
+                        android:id="@+id/tablayout"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content" />
+
+                </LinearLayout>
+            </android.support.design.widget.CollapsingToolbarLayout>
+
+        </android.support.design.widget.AppBarLayout>
+
+
+        <android.support.v4.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@{quote.symbolAndLastUpdate}" />
+            android:layout_marginTop="@dimen/activity_vertical_margin"
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{quote.bid}" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{quote.currency}" />
-
-            <ImageView
-                android:layout_width="32dp"
-                android:layout_height="32dp"
-                android:src="@{quote.isUp ? @drawable/ic_pointing_up_arrow : @drawable/ic_pointing_down_arrow}" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
 
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{quote.change}" />
+                <com.db.chart.view.LineChartView
+                    android:id="@+id/linechart"
+                    android:layout_width="match_parent"
+                    android:layout_height="300dp"
+                    chart:chart_axisBorderSpacing="@dimen/defult_margin"
+                    chart:chart_axisTopSpacing="@dimen/defult_margin" />
+
+                <android.support.v7.widget.GridLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="@dimen/activity_vertical_margin"
+                    android:paddingEnd="@dimen/activity_horizontal_margin"
+                    android:paddingLeft="@dimen/activity_horizontal_margin"
+                    android:paddingRight="@dimen/activity_horizontal_margin"
+                    android:paddingStart="@dimen/activity_horizontal_margin"
+                    android:paddingTop="@dimen/activity_vertical_margin"
+
+                    app:columnCount="4">
 
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{quote.changeinPercent}" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/day_high_label"
+                        android:textSize="@dimen/textsize_small"
+                        app:font="@{FontStyle.Medium}"
+                        app:layout_columnSpan="1"
+                        app:layout_columnWeight="1"
+                        app:layout_rowWeight="2" />
 
-        </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{quote.daysHigh}"
+                        android:textSize="@dimen/textsize_small"
+                        app:font="@{FontStyle.Medium}"
+                        app:layout_columnSpan="1"
+                        app:layout_columnWeight="2"
+                        app:layout_rowWeight="2" />
 
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/day_low_label"
+                        android:textSize="@dimen/textsize_small"
+                        app:font="@{FontStyle.Medium}"
+                        app:layout_columnSpan="1"
+                        app:layout_columnWeight="1"
+                        app:layout_rowWeight="3" />
 
-        <android.support.design.widget.TabLayout
-            android:id="@+id/tablayout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{quote.daysLow}"
+                        android:textSize="@dimen/textsize_small"
+                        app:font="@{FontStyle.Medium}"
+                        app:layout_columnSpan="1"
+                        app:layout_columnWeight="2"
+                        app:layout_rowWeight="3" />
 
-        <com.db.chart.view.LineChartView
-            android:id="@+id/linechart"
-            android:layout_width="match_parent"
-            android:layout_height="200dp" />
-
-        <android.support.v7.widget.GridLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/activity_horizontal_margin"
-            app:columnCount="4">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/opening_label"
-                app:layout_columnSpan="1"
-                app:layout_columnWeight="1"
-                app:layout_rowWeight="1" />
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{quote.open}"
-                app:layout_columnSpan="1"
-                app:layout_columnWeight="2"
-                app:layout_rowWeight="1" />
-
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/day_high_label"
-                app:layout_columnSpan="1"
-                app:layout_columnWeight="1"
-                app:layout_rowWeight="2" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{quote.daysHigh}"
-                app:layout_columnSpan="1"
-                app:layout_columnWeight="2"
-                app:layout_rowWeight="2" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/day_low_label"
-                app:layout_columnSpan="1"
-                app:layout_columnWeight="1"
-                app:layout_rowWeight="3" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{quote.daysLow}"
-                app:layout_columnSpan="1"
-                app:layout_columnWeight="2"
-                app:layout_rowWeight="3" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/year_high_label"
-                app:layout_columnSpan="1"
-                app:layout_columnWeight="3"
-                app:layout_rowWeight="2" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/year_high_label"
+                        android:textSize="@dimen/textsize_small"
+                        app:font="@{FontStyle.Medium}"
+                        app:layout_columnSpan="1"
+                        app:layout_columnWeight="3"
+                        app:layout_rowWeight="2" />
 
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{quote.yearHigh}"
-                app:layout_columnSpan="1"
-                app:layout_columnWeight="4"
-                app:layout_rowWeight="2" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{quote.yearHigh}"
+                        android:textSize="@dimen/textsize_small"
+                        app:font="@{FontStyle.Medium}"
+                        app:layout_columnSpan="1"
+                        app:layout_columnWeight="4"
+                        app:layout_rowWeight="2" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/year_low_label"
-                app:layout_columnSpan="1"
-                app:layout_columnWeight="3"
-                app:layout_rowWeight="3" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/year_low_label"
+                        android:textSize="@dimen/textsize_small"
+                        app:font="@{FontStyle.Medium}"
+                        app:layout_columnSpan="1"
+                        app:layout_columnWeight="3"
+                        app:layout_rowWeight="3" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@{quote.yearLow}"
-                app:layout_columnSpan="1"
-                app:layout_columnWeight="4"
-                app:layout_rowWeight="3" />
-        </android.support.v7.widget.GridLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{quote.yearLow}"
+                        android:textSize="@dimen/textsize_small"
+                        app:font="@{FontStyle.Medium}"
+                        app:layout_columnSpan="1"
+                        app:layout_columnWeight="4"
+                        app:layout_rowWeight="3" />
 
-    </LinearLayout>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/opening_label"
+                        android:textSize="@dimen/textsize_small"
+                        app:font="@{FontStyle.Medium}"
+                        app:layout_columnSpan="1"
+                        app:layout_columnWeight="1"
+                        app:layout_rowWeight="1" />
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@{quote.open}"
+                        android:textSize="@dimen/textsize_small"
+                        app:font="@{FontStyle.Medium}"
+                        app:layout_columnSpan="1"
+                        app:layout_columnWeight="2"
+                        app:layout_rowWeight="1" />
+                </android.support.v7.widget.GridLayout>
+
+            </LinearLayout>
+
+
+        </android.support.v4.widget.NestedScrollView>
+
+
+    </android.support.design.widget.CoordinatorLayout>
 </layout>

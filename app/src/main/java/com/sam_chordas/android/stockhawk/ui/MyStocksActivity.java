@@ -6,6 +6,7 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -93,17 +94,19 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
             @Override
             public void onClick(View v) {
                 if (isConnected()) {
-                    new MaterialDialog.Builder(MyStocksActivity.this).title(R.string.symbol_search)
+                    new MaterialDialog.Builder(MyStocksActivity.this)
+                            .title(R.string.symbol_search)
                             .content(R.string.content_test)
                             .inputType(InputType.TYPE_CLASS_TEXT)
+                            .contentColor(Color.BLACK)
                             .input(R.string.input_hint, R.string.input_prefill, new MaterialDialog.InputCallback() {
                                 @Override
                                 public void onInput(MaterialDialog dialog, CharSequence input) {
                                     // On FAB click, receive user input. Make sure the stock doesn't already exist
                                     // in the DB and proceed accordingly
-                                    Cursor c = getContentResolver().query(QuoteProvider.Quotes.CONTENT_URI,
-                                            new String[]{QuoteColumns.SYMBOL}, QuoteColumns.SYMBOL + "= ?",
-                                            new String[]{input.toString()}, null);
+                                    Cursor c = getContentResolver().query(QuoteProvider.Quotes.withSymbol(input.toString()),
+                                            new String[]{QuoteColumns.SYMBOL}, null,
+                                            null, null);
                                     if (c.getCount() != 0) {
                                         Toast toast =
                                                 Toast.makeText(MyStocksActivity.this, "This stock is already saved!",

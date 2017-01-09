@@ -78,9 +78,13 @@ public class StockDetailsFragment extends Fragment implements LoaderManager.Load
         if (savedInstanceState == null) {
             Intent mServiceIntent = new Intent(getActivity(), StockIntentService.class);
             mServiceIntent.setAction(Constants.ACTION_STOCK_HISTORY);
-            mServiceIntent.putExtra(Constants.SYMBOL, getArguments().getString(Constants.SYMBOL));
+            mServiceIntent.putExtra(Constants.SYMBOL, getSymbol());
             getActivity().startService(mServiceIntent);
         }
+    }
+
+    private String getSymbol() {
+        return getArguments().getString(Constants.SYMBOL);
     }
 
     @Nullable
@@ -90,6 +94,7 @@ public class StockDetailsFragment extends Fragment implements LoaderManager.Load
         View rootView = dataBinding.getRoot();
         lineChartView = (LineChartView) rootView.findViewById(R.id.linechart);
         tabLayout = (TabLayout) rootView.findViewById(R.id.tablayout);
+
         setupTablayout();
         return rootView;
     }
@@ -108,7 +113,7 @@ public class StockDetailsFragment extends Fragment implements LoaderManager.Load
                     b.putString(START_DATE, "-1 month");
                     Intent mServiceIntent = new Intent(getActivity(), StockIntentService.class);
                     mServiceIntent.setAction(Constants.ACTION_STOCK_HISTORY);
-                    mServiceIntent.putExtra(Constants.SYMBOL, getArguments().getString(Constants.SYMBOL));
+                    mServiceIntent.putExtra(Constants.SYMBOL, getSymbol());
                     instance.set(Calendar.MONTH, instance.get(Calendar.MONTH) - 1);
                     mServiceIntent.putExtra(Constants.START_DATE, simpleDateFormat.format(instance.getTime()));
                     getActivity().startService(mServiceIntent);
@@ -117,7 +122,7 @@ public class StockDetailsFragment extends Fragment implements LoaderManager.Load
                     b.putString(START_DATE, "-3 months");
                     Intent mServiceIntent = new Intent(getActivity(), StockIntentService.class);
                     mServiceIntent.setAction(Constants.ACTION_STOCK_HISTORY);
-                    mServiceIntent.putExtra(Constants.SYMBOL, getArguments().getString(Constants.SYMBOL));
+                    mServiceIntent.putExtra(Constants.SYMBOL, getSymbol());
                     instance.set(Calendar.MONTH, instance.get(Calendar.MONTH) - 3);
                     mServiceIntent.putExtra(Constants.START_DATE, simpleDateFormat.format(instance.getTime()));
                     getActivity().startService(mServiceIntent);
@@ -126,21 +131,10 @@ public class StockDetailsFragment extends Fragment implements LoaderManager.Load
                     b.putString(START_DATE, "-1 year");
                     Intent mServiceIntent = new Intent(getActivity(), StockIntentService.class);
                     mServiceIntent.setAction(Constants.ACTION_STOCK_HISTORY);
-                    mServiceIntent.putExtra(Constants.SYMBOL, getArguments().getString(Constants.SYMBOL));
+                    mServiceIntent.putExtra(Constants.SYMBOL, getSymbol());
                     instance.set(Calendar.YEAR, instance.get(Calendar.YEAR) - 1);
                     mServiceIntent.putExtra(Constants.START_DATE, simpleDateFormat.format(instance.getTime()));
                     getActivity().startService(mServiceIntent);
-                    getLoaderManager().restartLoader(LOADER_HISTORY_ID, b, StockDetailsFragment.this);
-                } else if (tab.getText().equals(getString(R.string.five_years))) {
-                    b.putString(START_DATE, "-5 years");
-                    Intent mServiceIntent = new Intent(getActivity(), StockIntentService.class);
-                    mServiceIntent.setAction(Constants.ACTION_STOCK_HISTORY);
-                    mServiceIntent.putExtra(Constants.SYMBOL, getArguments().getString(Constants.SYMBOL));
-                    instance.set(Calendar.YEAR, instance.get(Calendar.YEAR) - 5);
-                    mServiceIntent.putExtra(Constants.START_DATE, simpleDateFormat.format(instance.getTime()));
-                    getActivity().startService(mServiceIntent);
-                    getLoaderManager().restartLoader(LOADER_HISTORY_ID, b, StockDetailsFragment.this);
-                } else if (tab.getText().equals(getString(R.string.max_time))) {
                     getLoaderManager().restartLoader(LOADER_HISTORY_ID, b, StockDetailsFragment.this);
                 }
             }
@@ -156,14 +150,10 @@ public class StockDetailsFragment extends Fragment implements LoaderManager.Load
             }
         });
 
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.five_days));
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.one_month));
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.three_months));
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.one_year));
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.five_years));
-        tabLayout.addTab(tabLayout.newTab().setText(R.string.max_time));
-
-
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.five_days).setContentDescription(R.string.five_days_content_description));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.one_month).setContentDescription(R.string.one_month_content_description));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.three_months).setContentDescription(R.string.three_months_content_description));
+        tabLayout.addTab(tabLayout.newTab().setText(R.string.one_year).setContentDescription(R.string.one_year_content_description));
     }
 
 
@@ -174,17 +164,17 @@ public class StockDetailsFragment extends Fragment implements LoaderManager.Load
                 return new CursorLoader(getContext(), QuoteProvider.QuotesHistory.CONTENT_URI,
                         new String[]{QuoteHistoryColumns.DATE, QuoteHistoryColumns.BIDPRICE},
                         QuoteHistoryColumns.SYMBOL + " =? AND " + QuoteHistoryColumns.DATE + " >= date('now',\'" + args.getString(START_DATE) + "\')",
-                        new String[]{getArguments().getString(Constants.SYMBOL)},
+                        new String[]{getSymbol()},
                         QuoteHistoryColumns.DATE + " desc");
             } else {
                 return new CursorLoader(getContext(), QuoteProvider.QuotesHistory.CONTENT_URI,
                         new String[]{QuoteHistoryColumns.DATE, QuoteHistoryColumns.BIDPRICE},
                         QuoteHistoryColumns.SYMBOL + " = ?",
-                        new String[]{getArguments().getString(Constants.SYMBOL)},
+                        new String[]{getSymbol()},
                         QuoteHistoryColumns.DATE + " desc limit 5");
             }
         } else if (id == LOADER_DETAILS_ID) {
-            return new CursorLoader(getContext(), QuoteProvider.Quotes.withSymbol(getArguments().getString(Constants.SYMBOL)), null, null, null, null);
+            return new CursorLoader(getContext(), QuoteProvider.Quotes.withSymbol(getSymbol()), null, null, null, null);
         } else {
             throw new IllegalArgumentException();
         }
@@ -197,7 +187,11 @@ public class StockDetailsFragment extends Fragment implements LoaderManager.Load
                 drawChart(cursor);
             } else if (loader.getId() == LOADER_DETAILS_ID) {
                 QuoteViewModel quoteViewModel = new QuoteViewModel(cursor);
+                if (getActivity() instanceof StockDetailsActivity) {
+                    getActivity().setTitle(quoteViewModel.getName());
+                }
                 dataBinding.setVariable(BR.quote, quoteViewModel);
+
             }
         }
 
@@ -242,9 +236,9 @@ public class StockDetailsFragment extends Fragment implements LoaderManager.Load
         lineChartView.reset();
         lineChartView.addData(lineSet);
         lineChartView
-//                .setXLabels(AxisRenderer.LabelPosition.NONE)
                 .setLabelsColor(Color.WHITE)
                 .setAxisLabelsSpacing(getResources().getDimension(R.dimen.axis_thickness))
+                .setBorderSpacing(getResources().getDimension(R.dimen.small_margin))
                 .setAxisBorderValues((int) Math.floor(lineSet.getMin().getValue() - 1), Math.round(lineSet.getMax().getValue() + 1), -1)
                 .setXAxis(false)
                 .setYAxis(false);

@@ -4,6 +4,10 @@ import android.database.Cursor;
 
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 /**
  * Created by lucas on 03/01/17.
  */
@@ -102,7 +106,8 @@ public class QuoteViewModel {
     }
 
     public String getSymbolAndLastUpdate() {
-        return "";
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a, z", Locale.getDefault());
+        return getSymbol() + " " + simpleDateFormat.format(new Date(getLastUpdate()));
     }
 
     public boolean isUp() {

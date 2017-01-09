@@ -11,6 +11,7 @@ import android.util.Log;
 import com.google.android.gms.gcm.GcmNetworkManager;
 import com.google.android.gms.gcm.GcmTaskService;
 import com.google.android.gms.gcm.TaskParams;
+import com.google.gson.JsonSyntaxException;
 import com.sam_chordas.android.stockhawk.StockHawkApplication;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
@@ -31,6 +32,7 @@ import retrofit2.Call;
  * and is used for the initialization and adding task as well.
  */
 public class StockTaskService extends GcmTaskService {
+    public static final int NOT_FOUND = 321;
     @Inject
     QuoteApiService apiService;
     private Context mContext;
@@ -76,6 +78,10 @@ public class StockTaskService extends GcmTaskService {
                 }
             } catch (IOException e) {
                 e.printStackTrace();
+            } catch (JsonSyntaxException e) {
+                return NOT_FOUND;
+            } catch (NullPointerException e) {
+                return NOT_FOUND;
             }
         }
 
@@ -111,7 +117,7 @@ public class StockTaskService extends GcmTaskService {
         } else if (params.getTag().equals(Constants.ADD)) {
             isUpdate = false;
             // get symbol from params.getExtra and build query
-            String stockInput = params.getExtras().getString(Constants.SYMBOL);
+            String stockInput = params.getExtras().getString(Constants.SYMBOL).trim();
             urlStringBuilder.append("\"" + stockInput + "\")");
 
         }

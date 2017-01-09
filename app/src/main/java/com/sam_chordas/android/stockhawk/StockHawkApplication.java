@@ -27,7 +27,7 @@ public class StockHawkApplication extends Application {
         super.onCreate();
         Fabric.with(this, new Crashlytics());
         component = DaggerApplicationComponent.builder()
-                .appModule(new AppModule(this))
+                .appModule(new AppModule())
                 .networkModule(new NetworkModule())
                 .build();
     }

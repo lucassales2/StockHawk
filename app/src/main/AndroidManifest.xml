@@ -54,7 +54,15 @@
             android:authorities="com.sam_chordas.android.stockhawk.data.QuoteProvider"
             android:exported="false" />
 
-        <activity android:name=".ui.StockDetailsActivity" />
+        <activity
+            android:name=".ui.StockDetailsActivity"
+            android:parentActivityName=".ui.MyStocksActivity"
+            android:theme="@style/AppTheme.Toolbar">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MyStocksActivity" />
+            >
+        </activity>
 
         <meta-data
             android:name="io.fabric.ApiKey"

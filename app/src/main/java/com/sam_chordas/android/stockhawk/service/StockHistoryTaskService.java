@@ -89,9 +89,9 @@ public class StockHistoryTaskService extends GcmTaskService {
 
 
                 if (cursorEarlierstDate.moveToFirst() && cursorLatestDate.moveToFirst()) {
-                    Date earliestDateInDb = simpleDateFormat.parse(cursorEarlierstDate.getString(0));
                     Date startDate = simpleDateFormat.parse(startDateString);
                     Date endDate = simpleDateFormat.parse(endDateString);
+                    Date earliestDateInDb = simpleDateFormat.parse(cursorEarlierstDate.getString(0));
                     Date latestDateInDb = simpleDateFormat.parse(cursorLatestDate.getString(0));
                     if (startDate.after(earliestDateInDb)) {
                         startDate = latestDateInDb;
