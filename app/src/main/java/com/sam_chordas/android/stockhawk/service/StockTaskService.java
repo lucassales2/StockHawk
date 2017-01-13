@@ -2,6 +2,7 @@ package com.sam_chordas.android.stockhawk.service;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.content.OperationApplicationException;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -33,6 +34,7 @@ import retrofit2.Call;
  */
 public class StockTaskService extends GcmTaskService {
     public static final int NOT_FOUND = 321;
+    public static final String ACTION_DATA_UPDATED = "action_data_updated";
     @Inject
     QuoteApiService apiService;
     private Context mContext;
@@ -61,7 +63,7 @@ public class StockTaskService extends GcmTaskService {
             try {
                 Call<StockResponse> call = apiService.getStock(buildQuoteQuery(params));
                 getResponse = call.execute().body();
-                result = GcmNetworkManager.RESULT_SUCCESS;
+
                 try {
                     ContentValues contentValues = new ContentValues();
                     // update ISCURRENT to 0 (false) so new data is current
@@ -73,8 +75,11 @@ public class StockTaskService extends GcmTaskService {
 
                     mContext.getContentResolver().applyBatch(QuoteProvider.AUTHORITY,
                             Utils.quoteReponseToContentVals(getResponse));
+                    result = GcmNetworkManager.RESULT_SUCCESS;
+                    updateWidgets();
                 } catch (RemoteException | OperationApplicationException e) {
                     Log.e(LOG_TAG, "Error applying batch insert", e);
+                    return GcmNetworkManager.RESULT_FAILURE;
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -86,6 +91,14 @@ public class StockTaskService extends GcmTaskService {
         }
 
         return result;
+    }
+
+    private void updateWidgets() {
+
+        // Setting the package ensures that only components in our app will receive the broadcast
+        Intent dataUpdatedIntent = new Intent(ACTION_DATA_UPDATED)
+                .setPackage(mContext.getPackageName());
+        mContext.sendBroadcast(dataUpdatedIntent);
     }
 
     private String buildQuoteQuery(TaskParams params) {

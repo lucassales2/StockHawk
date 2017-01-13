@@ -29,5 +29,7 @@
     <string name="one_month_content_description">One month</string>
     <string name="three_months_content_description">Three months</string>
     <string name="one_year_content_description">One year</string>
+    <string name="title_widget">Hello World</string>
+    <string name="empty_string">No stock found</string>
 
 </resources>

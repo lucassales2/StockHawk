@@ -16,7 +16,7 @@
     <application
         android:name=".StockHawkApplication"
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@drawable/ic_hawk_bird_animal_shape"
         android:label="@string/app_name"
         android:theme="@style/AppTheme">
         <activity
@@ -37,6 +37,10 @@
                 <action android:name="com.google.android.gms.gcm.ACTION_TASK_READY" />
             </intent-filter>
         </service>
+
+        <service
+            android:name=".widget.StockWidgetViewsService"
+            android:permission="android.permission.BIND_REMOTEVIEWS" />
 
         <service
             android:name=".service.StockHistoryTaskService"
@@ -67,6 +71,17 @@
         <meta-data
             android:name="io.fabric.ApiKey"
             android:value="d5f9d149e46bd5e4d10dfb6d97273b4be4bef1ec" />
+        <receiver
+            android:name=".widget.StockWidgetProvider"
+            android:label="@string/title_widget">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/widget" />
+        </receiver>
     </application>
+
 
 </manifest>

@@ -106,7 +106,7 @@ public class QuoteViewModel {
     }
 
     public String getSymbolAndLastUpdate() {
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a, z", Locale.getDefault());
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm a dd/MMM, z", Locale.getDefault());
         return getSymbol() + " " + simpleDateFormat.format(new Date(getLastUpdate()));
     }
 

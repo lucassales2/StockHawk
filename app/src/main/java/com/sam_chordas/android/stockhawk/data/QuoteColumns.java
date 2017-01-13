@@ -1,20 +1,26 @@
 package com.sam_chordas.android.stockhawk.data;
 
-import net.simonvt.schematic.annotation.AutoIncrement;
+import net.simonvt.schematic.annotation.ConflictResolutionType;
 import net.simonvt.schematic.annotation.DataType;
 import net.simonvt.schematic.annotation.NotNull;
-import net.simonvt.schematic.annotation.PrimaryKey;
+import net.simonvt.schematic.annotation.PrimaryKeyConstraint;
 
+import static com.sam_chordas.android.stockhawk.data.QuoteDatabase.QUOTES;
 import static net.simonvt.schematic.annotation.DataType.Type.INTEGER;
 import static net.simonvt.schematic.annotation.DataType.Type.TEXT;
 
 /**
  * Created by sam_chordas on 10/5/15.
  */
+
+@PrimaryKeyConstraint(
+        columns = {QuoteColumns.SYMBOL},
+        name = QUOTES,
+        onConflict = ConflictResolutionType.REPLACE
+)
 public interface QuoteColumns {
     @DataType(INTEGER)
-    @PrimaryKey
-    @AutoIncrement
+    @NotNull
     String _ID = "_id";
 
     @DataType(TEXT)

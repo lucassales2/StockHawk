@@ -52,6 +52,7 @@ public class Utils {
         ContentProviderOperation.Builder builder = ContentProviderOperation.newInsert(
                 QuoteProvider.Quotes.CONTENT_URI);
         String change = quoteDto.getChange();
+        builder.withValue(QuoteColumns._ID, quoteDto.getSymbol().hashCode());
         builder.withValue(QuoteColumns.SYMBOL, quoteDto.getSymbol());
         builder.withValue(QuoteColumns.BIDPRICE, truncateBidPrice(quoteDto.getBid()));
         builder.withValue(QuoteColumns.PERCENT_CHANGE, truncateChange(
