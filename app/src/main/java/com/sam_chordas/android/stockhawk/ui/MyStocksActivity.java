@@ -1,9 +1,11 @@
 package com.sam_chordas.android.stockhawk.ui;
 
 import android.app.LoaderManager;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Color;
@@ -38,6 +40,8 @@ import com.sam_chordas.android.stockhawk.service.StockIntentService;
 import com.sam_chordas.android.stockhawk.service.StockTaskService;
 import com.sam_chordas.android.stockhawk.touch_helper.SimpleItemTouchHelperCallback;
 
+import static com.sam_chordas.android.stockhawk.service.StockTaskService.NOT_FOUND;
+
 public class MyStocksActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     /**
@@ -49,11 +53,17 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
     private QuoteCursorAdapter mCursorAdapter;
     private Cursor mCursor;
     private RecyclerView recyclerView;
+    private ApiRequestReceiver receiver;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_my_stocks);
+
+        IntentFilter filter = new IntentFilter(ApiRequestReceiver.PROCESS_RESPONSE);
+        filter.addCategory(Intent.CATEGORY_DEFAULT);
+        receiver = new ApiRequestReceiver();
+        registerReceiver(receiver, filter);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -165,6 +175,12 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
                 activeNetwork.isConnectedOrConnecting();
     }
 
+    @Override
+    public void onDestroy() {
+        this.unregisterReceiver(receiver);
+        super.onDestroy();
+    }
+
 
     @Override
     public void onResume() {
@@ -218,4 +234,20 @@ public class MyStocksActivity extends AppCompatActivity implements LoaderManager
         mCursorAdapter.swapCursor(null);
     }
 
+    public class ApiRequestReceiver extends BroadcastReceiver {
+
+        public static final String PROCESS_RESPONSE = "com.sam_chordas.android.stockhawk.intent.action.PROCESS_RESPONSE";
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int responseString = intent.getIntExtra(StockIntentService.RESPONSE_STRING, 0);
+            if (responseString == NOT_FOUND) {
+                String stringExtra = intent.getStringExtra(Constants.SYMBOL);
+                Snackbar.make(recyclerView, stringExtra + " " + getString(R.string.symbol_not_found), Snackbar.LENGTH_LONG).show();
+            }
+
+        }
+
+
+    }
 }

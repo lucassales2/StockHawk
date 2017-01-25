@@ -31,5 +31,6 @@
     <string name="one_year_content_description">One year</string>
     <string name="title_widget">Hello World</string>
     <string name="empty_string">No stock found</string>
+    <string name="symbol_not_found">not found</string>
 
 </resources>

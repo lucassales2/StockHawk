@@ -1,6 +1,7 @@
 package com.sam_chordas.android.stockhawk.widget;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.support.v4.content.ContextCompat;
 import android.widget.RemoteViews;
@@ -9,6 +10,9 @@ import android.widget.RemoteViewsService;
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.data.QuoteColumns;
 import com.sam_chordas.android.stockhawk.data.QuoteProvider;
+import com.sam_chordas.android.stockhawk.service.Constants;
+
+import static com.sam_chordas.android.stockhawk.widget.StockWidgetProvider.OPEN_MAIN_ACTIVIY;
 
 /**
  * Created by lucas on 13/01/17.
@@ -55,14 +59,19 @@ public class StockWidgetFactory implements RemoteViewsService.RemoteViewsFactory
     public RemoteViews getViewAt(int i) {
         RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_list_item_quote);
         if (mCursor.moveToPosition(i)) {
+            String symbol = mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL));
             rv.setTextViewText(R.id.stock_symbol,
-                    mCursor.getString(mCursor.getColumnIndex(QuoteColumns.SYMBOL)));
+                    symbol);
             rv.setTextViewText(R.id.bid_price,
                     mCursor.getString(mCursor.getColumnIndex(QuoteColumns.BIDPRICE)));
             rv.setTextViewText(R.id.change,
                     mCursor.getString(mCursor.getColumnIndex(QuoteColumns.PERCENT_CHANGE)));
             rv.setTextColor(R.id.change,
                     mCursor.getInt(mCursor.getColumnIndex(QuoteColumns.ISUP)) == 1 ? ContextCompat.getColor(mContext, R.color.material_green_700) : ContextCompat.getColor(mContext, R.color.material_red_700));
+
+            Intent fillInIntent = new Intent(OPEN_MAIN_ACTIVIY);
+            fillInIntent.putExtra(Constants.SYMBOL, symbol);
+            rv.setOnClickFillInIntent(R.id.widgetRow, fillInIntent);
 
         }
         return rv;

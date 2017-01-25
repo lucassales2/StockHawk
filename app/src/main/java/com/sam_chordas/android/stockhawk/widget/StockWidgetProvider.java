@@ -10,6 +10,7 @@ import android.widget.RemoteViews;
 
 import com.sam_chordas.android.stockhawk.R;
 import com.sam_chordas.android.stockhawk.ui.MyStocksActivity;
+import com.sam_chordas.android.stockhawk.ui.StockDetailsActivity;
 
 
 /**
@@ -27,8 +28,13 @@ public class StockWidgetProvider extends AppWidgetProvider {
             RemoteViews remoteViews = updateWidgetListView(context,
                     appWidgetId);
 
+            Intent startActivityIntent = new Intent(context, StockDetailsActivity.class);
+            PendingIntent startActivityPendingIntent = PendingIntent.getActivity(context, 0, startActivityIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            remoteViews.setPendingIntentTemplate(R.id.listViewWidget, startActivityPendingIntent);
+
             appWidgetManager.updateAppWidget(appWidgetId,
                     remoteViews);
+
         }
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
@@ -51,13 +57,6 @@ public class StockWidgetProvider extends AppWidgetProvider {
         //setting adapter to listview of the widget
         remoteViews.setRemoteAdapter(appWidgetId, R.id.listViewWidget,
                 svcIntent);
-
-        Intent configIntent = new Intent(context, MyStocksActivity.class);
-
-        PendingIntent configPendingIntent = PendingIntent.getActivity(context, 0, configIntent, 0);
-
-        remoteViews.setOnClickPendingIntent(R.id.widgetLayout, configPendingIntent);
-
         //setting an empty view in case of no data
 //        remoteViews.setEmptyView(R.id.listViewWidget, R.id.empty_view);
         return remoteViews;

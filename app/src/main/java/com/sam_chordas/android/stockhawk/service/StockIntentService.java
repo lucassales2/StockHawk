@@ -6,12 +6,14 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.android.gms.gcm.TaskParams;
+import com.sam_chordas.android.stockhawk.ui.MyStocksActivity;
 
 /**
  * Created by sam_chordas on 10/1/15.
  */
 public class StockIntentService extends IntentService {
 
+    public static final String RESPONSE_STRING = "responseString";
 
     public StockIntentService() {
         super(StockIntentService.class.getName());
@@ -33,7 +35,15 @@ public class StockIntentService extends IntentService {
                 }
                 // We can call OnRunTask from the intent service to force it to run immediately instead of
                 // scheduling a task.
-                int result = stockTaskService.onRunTask(new TaskParams(intent.getStringExtra(Constants.TAG), args));
+
+                if (stockTaskService.onRunTask(new TaskParams(intent.getStringExtra(Constants.TAG), args)) == StockTaskService.NOT_FOUND) {
+                    Intent broadcastIntent = new Intent();
+                    broadcastIntent.setAction(MyStocksActivity.ApiRequestReceiver.PROCESS_RESPONSE);
+                    broadcastIntent.addCategory(Intent.CATEGORY_DEFAULT);
+                    broadcastIntent.putExtra(RESPONSE_STRING, StockTaskService.NOT_FOUND);
+                    broadcastIntent.putExtra(Constants.SYMBOL, intent.getStringExtra(Constants.SYMBOL));
+                    sendBroadcast(broadcastIntent);
+                }
             } else if (intent.getAction().equals(Constants.ACTION_STOCK_HISTORY)) {
                 StockHistoryTaskService stockHistoryTaskService = new StockHistoryTaskService(this);
                 Bundle extras = intent.getExtras();
